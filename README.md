@@ -19,3 +19,10 @@ Bu proje, TOML formatındaki LiDAR sensör verilerini okuyup mesafe ölçümleri
 ## Proje Amacı
 
 LiDAR sensöründen alınan ham verileri işleyerek anlamlı çıktılar üretmek ve veri işleme mantığını uygulamalı olarak geliştirmektir.
+
+## Geliştiriciler
+
+Bu proje iki kişilik ekip çalışması olarak geliştirilmiştir.
+
+- Rena Hüseynova
+- Ahmet Yılmaz
