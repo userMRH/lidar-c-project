@@ -3,11 +3,11 @@
 #define _USE_MATH_DEFINES 
 #define _CRT_SECURE_NO_WARNINGS
 
-// Sabit RANSAC ayarları
+// Sabit RANSAC ayarlarÄ±
 #define MAX_ITERATIONS 1000
 #define DISTANCE_THRESHOLD 0.02 // 2 cm tolerans (metre cinsinden)
-#define MIN_INLIER_COUNT 8      // Proje isterine göre en az 8 nokta
-#define MIN_LINE_SIZE 8         // RANSAC sonrası minimum doğru büyüklüğü
+#define MIN_INLIER_COUNT 8      // Proje isterine gÃ¶re en az 8 nokta
+#define MIN_LINE_SIZE 8         // RANSAC sonrasÄ± minimum doÄŸru bÃ¼yÃ¼klÃ¼ÄŸÃ¼
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,11 +17,11 @@
 #include <time.h> //SRAND icin
 //#include <float.h> //INFINITY icin
 
-// Struct tanımı (sadece gerekli alanlar + çıktı olarak ranges eklendi)
+// Struct tanÄ±mÄ± (sadece gerekli alanlar + Ã§Ä±ktÄ± olarak ranges eklendi)
 typedef struct {
     double angle_min, angle_max, angle_increment;
     double range_min, range_max;
-    double* ranges;   // filtrelenmiş değerler
+    double* ranges;   // filtrelenmiÅŸ deÄŸerler
     int     rangeCount; //gecerli olanlarin sayisi
     int toplamrange;//tum ranges degerlerinin sayisi
 } lidarverileri;
@@ -33,35 +33,35 @@ typedef struct {
 } kartezyenveri;
 
 typedef struct {
-    double A, B, C; // Doğru denklemi parametreleri
-    int* inlierindisleri; // Bu doğruya ait noktaların orijinal dizideki indisleri
+    double A, B, C; // DoÄŸru denklemi parametreleri
+    int* inlierindisleri; // Bu doÄŸruya ait noktalarÄ±n orijinal dizideki indisleri
     int toplaminlier;
-} dogru; // Doğruyu temsil eden yapı: Ax + By + C = 0
+} dogru; // DoÄŸruyu temsil eden yapÄ±: Ax + By + C = 0
 
 typedef struct {
-    int max_deneme;         // Maksimum deneme sayısı (Örn: 1000)
-    double uzaklik_toleransi;  // Noktanın doğruya uzaklık toleransı (Örn: 0.05 metre)
-    int min_gerekli_nokta;// Bir doğru kabul edilmesi için minimum nokta sayısı (Projeye göre EN AZ 8)
+    int max_deneme;         // Maksimum deneme sayÄ±sÄ± (Ã–rn: 1000)
+    double uzaklik_toleransi;  // NoktanÄ±n doÄŸruya uzaklÄ±k toleransÄ± (Ã–rn: 0.05 metre)
+    int min_gerekli_nokta;// Bir doÄŸru kabul edilmesi iÃ§in minimum nokta sayÄ±sÄ± (Projeye gÃ¶re EN AZ 8)
 } ransacayarlari;
 
 typedef struct {
     double x;
     double y;
-    int is_valid; // 1: Kesişim var, 0: Paralel/Çakışık
+    int is_valid; // 1: KesiÅŸim var, 0: Paralel/Ã‡akÄ±ÅŸÄ±k
 } KesisimNoktasi;
 
-// İmza aynı
+// Ä°mza aynÄ±
 lidarverileri verialma(FILE* dosya);  //verialma fonksiyonu tanimladik
 kartezyenveri* kartezyene_cevir(const lidarverileri* l, int* nokta_sayisi); //kartezyenecevirme fonksiyonu tanimladik
 
 dogru* dogrularin_ransacla_bulunmasi(const kartezyenveri* P, int nokta_sayisi, int* lineCount);// Ana fonksiyon imzasi
-dogru dogru_hesaplama(const kartezyenveri P1, const kartezyenveri P2);// İki noktadan (P1, P2) doğru denklemini hesaplayan yardımcı fonksiyon
-double noktanin_dogruya_uzakligi(const kartezyenveri P, const dogru L);// Bir noktanın (P) doğruya olan uzaklığını hesaplayan yardımcı fonksiyon
-KesisimNoktasi kesisim_hesapla(const dogru L1, const dogru L2); // İki doğrunun kesişim noktasını hesaplayan yardımcı fonksiyon
-double dogrular_arasi_aci(const dogru L1, const dogru L2); // İki doğru arasındaki açıyı hesaplayan yardımcı fonksiyon
-double merkeze_mesafe_hesapla(const KesisimNoktasi P); //   Kesişim noktasının orijine (0,0) olan uzaklığını hesaplayan yardımcı fonksiyon
+dogru dogru_hesaplama(const kartezyenveri P1, const kartezyenveri P2);// Ä°ki noktadan (P1, P2) doÄŸru denklemini hesaplayan yardÄ±mcÄ± fonksiyon
+double noktanin_dogruya_uzakligi(const kartezyenveri P, const dogru L);// Bir noktanÄ±n (P) doÄŸruya olan uzaklÄ±ÄŸÄ±nÄ± hesaplayan yardÄ±mcÄ± fonksiyon
+KesisimNoktasi kesisim_hesapla(const dogru L1, const dogru L2); // Ä°ki doÄŸrunun kesiÅŸim noktasÄ±nÄ± hesaplayan yardÄ±mcÄ± fonksiyon
+double dogrular_arasi_aci(const dogru L1, const dogru L2); // Ä°ki doÄŸru arasÄ±ndaki aÃ§Ä±yÄ± hesaplayan yardÄ±mcÄ± fonksiyon
+double merkeze_mesafe_hesapla(const KesisimNoktasi P); //   KesiÅŸim noktasÄ±nÄ±n orijine (0,0) olan uzaklÄ±ÄŸÄ±nÄ± hesaplayan yardÄ±mcÄ± fonksiyon
 
-// ---- SVG Çizim Prototipleri ----
+// ---- SVG Ã‡izim Prototipleri ----
 void svg_ciz(
     const char* dosya_adi,
     const kartezyenveri* P, int N,
@@ -71,7 +71,7 @@ void svg_ciz(
     double mesafe_m                     // 0 olabilir
 );
 
-// ---------------- SVG Çizim Yardımcıları ----------------
+// ---------------- SVG Ã‡izim YardÄ±mcÄ±larÄ± ----------------
 typedef struct { double minx, maxx, miny, maxy; } BBox;
 static BBox bbox_hesapla(const kartezyenveri* P, int N);
 static void world2svg(double x, double y, const BBox* b, int W, int H, int M, double* sx, double* sy);
@@ -80,7 +80,7 @@ static void yaz_dogru_etiketi(FILE* f, int k, double sx1, double sy1, double sx2
 
 int main() {
 
-    srand(time(NULL)); // Rastgele sayı üreteciyi başlat
+    srand(time(NULL)); // Rastgele sayÄ± Ã¼reteciyi baÅŸlat
 
     FILE* ScanData = fopen("C:\\Users\\Asus\\Desktop\\egitim\\UNIVERSITE\\2-1\\Programlama laboratuvari-1\\proje1 Lidar\\scan_data_NaN.toml", "r");
     if (ScanData == NULL) { printf("Dosya acilamadi!\n"); return 1; }
@@ -110,11 +110,11 @@ int main() {
     }
     printf("\n");
 
-    // --- Kartezyene dönüştür ---
+    // --- Kartezyene dÃ¶nÃ¼ÅŸtÃ¼r ---
     int nokta_sayisi = 0;
     kartezyenveri* noktalar = kartezyene_cevir(&lidar, &nokta_sayisi);
 
-    // Tüm geçerli (NaN olmayan) noktaları yazdır
+    // TÃ¼m geÃ§erli (NaN olmayan) noktalarÄ± yazdÄ±r
     printf("\n--- Gecerli noktalar (indis, aci[deg], r, x, y) ---\n");
     int yazilan = 0;
     for (int i = 0; i < nokta_sayisi; i++) {
@@ -126,12 +126,12 @@ int main() {
         {
             continue;
         }
-        // Sen geçersizleri 0.0 yapıyorsun; ayrıca kartezyene_cevir NaN yazıyor.
-        // İki koşulu da güvenceye alalım:
+        // Sen geÃ§ersizleri 0.0 yapÄ±yorsun; ayrÄ±ca kartezyene_cevir NaN yazÄ±yor.
+        // Ä°ki koÅŸulu da gÃ¼venceye alalÄ±m:
         if (r > 0.0 && r >= lidar.range_min && r <= lidar.range_max
             && !isnan(noktalar[i].x) && !isnan(noktalar[i].y)) {
 
-            printf("[%4d] %8.3f°  r=%7.3f -> x=%10.5f  y=%10.5f\n",
+            printf("[%4d] %8.3fÂ°  r=%7.3f -> x=%10.5f  y=%10.5f\n",
                 i, deg, r, noktalar[i].x, noktalar[i].y);
             yazilan++;
         }
@@ -140,14 +140,14 @@ int main() {
 
     int gecerli_nokta_sayisi = 0;
     for (int i = 0; i < nokta_sayisi; i++) {
-        // Geçerli kabul edilen noktaların sadece NaN olmayanlar olması gerekir.
-        // NaN kontrolü için isnan() fonksiyonunu kullanıyoruz.
+        // GeÃ§erli kabul edilen noktalarÄ±n sadece NaN olmayanlar olmasÄ± gerekir.
+        // NaN kontrolÃ¼ iÃ§in isnan() fonksiyonunu kullanÄ±yoruz.
         if (!isnan(noktalar[i].x) && !isnan(noktalar[i].y)) {
             gecerli_nokta_sayisi++;
         }
     }
 
-    // RANSAC'a sadece geçerli noktaları içeren yeni bir dizi gönderelim:
+    // RANSAC'a sadece geÃ§erli noktalarÄ± iÃ§eren yeni bir dizi gÃ¶nderelim:
     kartezyenveri* RANSAC_noktalar = (kartezyenveri*)malloc(gecerli_nokta_sayisi * sizeof(kartezyenveri));
     int RANSAC_indis = 0;
     for (int i = 0; i < nokta_sayisi; i++) {
@@ -160,27 +160,27 @@ int main() {
     printf("RANSAC'a gonderilen gecerli nokta sayisi: %d\n", gecerli_nokta_sayisi);
 
     int lineCount = 0;
-    // RANSAC ile doğruları bul
-    // Buradaki nokta_sayisi artık gecerli_nokta_sayisi olmalıdır!
+    // RANSAC ile doÄŸrularÄ± bul
+    // Buradaki nokta_sayisi artÄ±k gecerli_nokta_sayisi olmalÄ±dÄ±r!
     dogru* lines = dogrularin_ransacla_bulunmasi(RANSAC_noktalar, gecerli_nokta_sayisi, &lineCount);
 
     printf("Tespit edilen toplam dogru sayisi: %d\n", lineCount);
     printf("----------------------------------------\n");
 
-    // Tespit edilen doğruları ve inlier sayılarını listele
+    // Tespit edilen doÄŸrularÄ± ve inlier sayÄ±larÄ±nÄ± listele
     for (int i = 0; i < lineCount; i++) {
         dogru L = lines[i];
 
         printf("\nDogru %d (Inlier: %d nokta):\n", i + 1, L.toplaminlier);
 
-        // Doğru denklemi (Ax + By + C = 0)
+        // DoÄŸru denklemi (Ax + By + C = 0)
         printf("  Denklem: %.4lf*x + %.4lf*y + %.4lf = 0\n", L.A, L.B, L.C);
 
-        // Doğruya ait noktaların koordinatlarını yazdırma (İlk 5 nokta örnek olarak)
+        // DoÄŸruya ait noktalarÄ±n koordinatlarÄ±nÄ± yazdÄ±rma (Ä°lk 5 nokta Ã¶rnek olarak)
         printf("  Ornek Inlier Noktalar (ilk 5 - RANSAC dizisi indisleri):\n");
         int limit = (L.toplaminlier < 5) ? L.toplaminlier : 5;
         for (int j = 0; j < limit; j++) {
-            // RANSAC_noktalar dizisinden koordinatları al
+            // RANSAC_noktalar dizisinden koordinatlarÄ± al
             int RANSAC_idx = L.inlierindisleri[j];
             printf("    (%d) x: %.3lf, y: %.3lf\n", RANSAC_idx, RANSAC_noktalar[RANSAC_idx].x, RANSAC_noktalar[RANSAC_idx].y);
         }
@@ -193,27 +193,27 @@ int main() {
 
     printf("\n--- Kesisim ve Aci Analizi ---\n");
 
-    // Tüm doğru çiftlerini döngü ile kontrol et (i=d1, j=d2, ...)
+    // TÃ¼m doÄŸru Ã§iftlerini dÃ¶ngÃ¼ ile kontrol et (i=d1, j=d2, ...)
     for (int i = 0; i < lineCount; i++) {
         for (int j = i + 1; j < lineCount; j++) {
 
             dogru L1 = lines[i];
             dogru L2 = lines[j];
 
-            // 1. Kesişim Noktasını Bul
+            // 1. KesiÅŸim NoktasÄ±nÄ± Bul
             KesisimNoktasi P = kesisim_hesapla(L1, L2);
 
             if (P.is_valid) {
-                // 2. Doğrular Arasındaki Açıyı Hesapla (Derece)
+                // 2. DoÄŸrular ArasÄ±ndaki AÃ§Ä±yÄ± Hesapla (Derece)
                 double angle = dogrular_arasi_aci(L1, L2);
 
                 printf("Dogru %d ve Dogru %d kesisiyor (%.2f, %.2f) - Aci: %.2f derece\n",
                     i + 1, j + 1, P.x, P.y, angle);
 
-                // 3. Açı Kontrolü (60 derece ve üstü)
-                if (angle >= 60.0) { // 60 derece, proje isterine göre 
+                // 3. AÃ§Ä± KontrolÃ¼ (60 derece ve Ã¼stÃ¼)
+                if (angle >= 60.0) { // 60 derece, proje isterine gÃ¶re 
 
-                    // En yüksek açılı kesişimi bul (en uygun köşe)
+                    // En yÃ¼ksek aÃ§Ä±lÄ± kesiÅŸimi bul (en uygun kÃ¶ÅŸe)
                     if (angle > max_aci) {
                         max_aci = angle;
                         best_kesisim = P;
@@ -226,7 +226,7 @@ int main() {
     }
 
     // -------------------------------------------------------------------
-    // ---- MERKEZ VE MESAFE HESABI (İster 5) ----
+    // ---- MERKEZ VE MESAFE HESABI (Ä°ster 5) ----
     // -------------------------------------------------------------------
 
     if (best_kesisim.is_valid) {
@@ -236,22 +236,22 @@ int main() {
         printf("\n------------------------------------------------\n");
         printf("EN UYGUN HEDEF (Maksimum Aci: %.2f derece)\n", max_aci);
         printf("------------------------------------------------\n");
-        printf("Kesen Doğrular: d%d ve d%d\n", idx1, idx2);
-        printf("Kesişim Noktasi (xc, yc): (%.4lf, %.4lf)\n", best_kesisim.x, best_kesisim.y);
+        printf("Kesen DoÄŸrular: d%d ve d%d\n", idx1, idx2);
+        printf("KesiÅŸim Noktasi (xc, yc): (%.4lf, %.4lf)\n", best_kesisim.x, best_kesisim.y);
         printf("Robot Merkezine Olan Mesafe: %.4lf metre\n", final_mesafe);
         printf("------------------------------------------------\n");
     }
     else {
-        printf("\n60 derece ve üzeri açıyla kesişen uygun bir doğru çifti bulunamadı.\n");
+        printf("\n60 derece ve Ã¼zeri aÃ§Ä±yla kesiÅŸen uygun bir doÄŸru Ã§ifti bulunamadÄ±.\n");
     }
 
 
-    // iş bitti
+    // iÅŸ bitti
     free(noktalar);
 
     free(lidar.ranges);//tum islemler bittikten sonra yapcaz.aslinda kartezyene cevirdikten sonra yapilabilir.
 
-    // --- SVG çıktı üret ---
+    // --- SVG Ã§Ä±ktÄ± Ã¼ret ---
     svg_ciz(
         "cikti.svg",
         RANSAC_noktalar, gecerli_nokta_sayisi,
@@ -265,17 +265,17 @@ int main() {
     return 0;
 }
 
-// ---- TOML oku + ranges'i basitçe ayıkla/filtrele ----
+// ---- TOML oku + ranges'i basitÃ§e ayÄ±kla/filtrele ----
 lidarverileri verialma(FILE* dosya) {
     lidarverileri lidar = { 0 };
     char line[1024]; //tampon(buffer) satir
-    int inRanges = 0;                 // ranges = [ ... ] bloğunda mıyız?
+    int inRanges = 0;                 // ranges = [ ... ] bloÄŸunda mÄ±yÄ±z?
     double* gecerlidegerler = NULL; //bir double turunde dizi yaraticam fakat daha yaratmadim ama adresini kaydetmek icin pointer olusturdum.
     int n = 0;    // kac tane filtrelenmis yani gecerli deger var
     int y = 0; //toplam range degerlerinin sayisi
 
     while (fgets(line, sizeof(line), dosya)) {
-        // 1) önce scaler parametreler
+        // 1) Ã¶nce scaler parametreler
         if (inRanges == 0) {
             if (strstr(line, "angle_min"))            sscanf(line, "angle_min = %lf", &lidar.angle_min);
             else if (strstr(line, "angle_max"))       sscanf(line, "angle_max = %lf", &lidar.angle_max);
@@ -284,30 +284,30 @@ lidarverileri verialma(FILE* dosya) {
             else if (strstr(line, "range_max"))       sscanf(line, "range_max = %lf", &lidar.range_max);
         }
 
-        // 2) ranges başlangıcı?
+        // 2) ranges baÅŸlangÄ±cÄ±?
         if (inRanges == 0 && strstr(line, "ranges")) //inRanges ya da inRanges==NULL yazabiliriz
         {
-            // bu satırda dizi başlayabilir
+            // bu satÄ±rda dizi baÅŸlayabilir
             if (strchr(line, '[')) //string icinde char arar.
                 inRanges = 1;//range'in icinde oldugumuzu belirtir
         }
 
-        // 3) ranges içindeysek token token topla
+        // 3) ranges iÃ§indeysek token token topla
         if (inRanges == 1) {
-            // virgül, köşeli parantez ve boşlukları ayraç yap
-            // Not: "ranges = [" olduğu satırı da işler; sonraki satırlar da aynı mantıkla ilerler
+            // virgÃ¼l, kÃ¶ÅŸeli parantez ve boÅŸluklarÄ± ayraÃ§ yap
+            // Not: "ranges = [" olduÄŸu satÄ±rÄ± da iÅŸler; sonraki satÄ±rlar da aynÄ± mantÄ±kla ilerler
             for (char* token = strtok(line, ",[] \t\r\n"); token; token = strtok(NULL, ",[] \t\r\n"))
             {
-                // "ranges" ve "=" gibi başlık kısımlarını atla
+                // "ranges" ve "=" gibi baÅŸlÄ±k kÄ±sÄ±mlarÄ±nÄ± atla
                 if (strcmp(token, "ranges") == NULL || strcmp(token, "=") == NULL) continue;
 
-                // sayıya çevir
+                // sayÄ±ya Ã§evir
                 double alinanveri = atof(token); //ASCII to Float. Ranges kismini char olarak cektik ama ustunde kartezyene cevirme islemini yapmamiz icin double olmasi gerek.
 
                 // filtre: range_min <= v <= range_max ve angle_min <= a <= angle_max
 
                 if (alinanveri >= lidar.range_min && alinanveri <= lidar.range_max) {
-                    // basitçe büyüt: (en basit hali — her eklemede realloc)
+                    // basitÃ§e bÃ¼yÃ¼t: (en basit hali Â— her eklemede realloc)
                     gecerlidegerler = (double*)realloc(gecerlidegerler, (n + 1) * sizeof(double));
                     gecerlidegerler[n++] = alinanveri;
                     y++;
@@ -321,7 +321,7 @@ lidarverileri verialma(FILE* dosya) {
 
                 }
             }
-            // Kapanış aynı satırda mı? (']' varsa dizi bitti)
+            // KapanÄ±ÅŸ aynÄ± satÄ±rda mÄ±? (']' varsa dizi bitti)
             if (strchr(line, ']')) inRanges = 0;
         }
     }
@@ -332,14 +332,14 @@ lidarverileri verialma(FILE* dosya) {
     return lidar;
 }
 
-// ---- Polar(r,theta) -> Kartezyen(x,y) dönüştürme ----
+// ---- Polar(r,theta) -> Kartezyen(x,y) dÃ¶nÃ¼ÅŸtÃ¼rme ----
 kartezyenveri* kartezyene_cevir(const lidarverileri* l, int* nokta_sayisi) {
     if (l == NULL || (*l).ranges == NULL || (*l).toplamrange <= 0) {
         if (nokta_sayisi) *nokta_sayisi = 0;
         return NULL;
     }
 
-    int N = (*l).toplamrange;           // tüm ölçüm sayısı (geçersizler dahil)
+    int N = (*l).toplamrange;           // tÃ¼m Ã¶lÃ§Ã¼m sayÄ±sÄ± (geÃ§ersizler dahil)
     kartezyenveri* P = (kartezyenveri*)malloc(N * sizeof(kartezyenveri));
     if (P == NULL) {
         if (nokta_sayisi) *nokta_sayisi = 0;
@@ -350,13 +350,13 @@ kartezyenveri* kartezyene_cevir(const lidarverileri* l, int* nokta_sayisi) {
         double r = (*l).ranges[i];
         double theta = (*l).angle_min + i * (*l).angle_increment;
 
-        // Geçerli mi? (Sen geçersizleri 0.0 olarak koyuyorsun)
+        // GeÃ§erli mi? (Sen geÃ§ersizleri 0.0 olarak koyuyorsun)
         if (r > 0.0 && r >= (*l).range_min && r <= (*l).range_max) {
             P[i].x = r * cos(theta);
             P[i].y = r * sin(theta);
         }
         else {
-            // Geçersizleri NaN işaretleyelim
+            // GeÃ§ersizleri NaN iÅŸaretleyelim
             P[i].x = NAN;
             P[i].y = NAN;
         }
@@ -366,7 +366,7 @@ kartezyenveri* kartezyene_cevir(const lidarverileri* l, int* nokta_sayisi) {
     return P;
 }
 
-// İki noktadan (P1, P2) doğru denklemini hesaplayan yardımcı fonksiyon
+// Ä°ki noktadan (P1, P2) doÄŸru denklemini hesaplayan yardÄ±mcÄ± fonksiyon
 dogru dogru_hesaplama(const kartezyenveri P1, const kartezyenveri P2) {
     dogru L;
     L.A = P2.y - P1.y;  // A = y2 - y1
@@ -379,15 +379,15 @@ dogru dogru_hesaplama(const kartezyenveri P1, const kartezyenveri P2) {
     return L;
 }
 
-// Bir noktanın (P) doğruya olan dik uzaklığını hesaplayan yardımcı fonksiyon
+// Bir noktanÄ±n (P) doÄŸruya olan dik uzaklÄ±ÄŸÄ±nÄ± hesaplayan yardÄ±mcÄ± fonksiyon
 double noktanin_dogruya_uzakligi(const kartezyenveri P, const dogru L) {
 
     double pay = fabs(L.A * P.x + L.B * P.y + L.C); // Pay: |A*x0 + B*y0 + C|
     double payda = sqrt(L.A * L.A + L.B * L.B); // Payda: sqrt(A^2 + B^2)
 
-    // Doğrunun sıfır eğimli (A=B=0) olma durumunu kontrol et (genellikle RANSAC'ta olmaz, ama güvenlik için)
-    if (payda < 1e-6) { // Çok küçük bir sayıya eşitse (sıfır kabul et)
-        return INFINITY; // Veya çok büyük bir hata değeri
+    // DoÄŸrunun sÄ±fÄ±r eÄŸimli (A=B=0) olma durumunu kontrol et (genellikle RANSAC'ta olmaz, ama gÃ¼venlik iÃ§in)
+    if (payda < 1e-6) { // Ã‡ok kÃ¼Ã§Ã¼k bir sayÄ±ya eÅŸitse (sÄ±fÄ±r kabul et)
+        return INFINITY; // Veya Ã§ok bÃ¼yÃ¼k bir hata deÄŸeri
     }
 
     return pay / payda;
@@ -399,72 +399,72 @@ dogru* dogrularin_ransacla_bulunmasi(const kartezyenveri* P, int nokta_sayisi, i
         return NULL;
     }
 
-    // Doğruları tutacak dinamik dizi
+    // DoÄŸrularÄ± tutacak dinamik dizi
     dogru* lines = NULL;
     *lineCount = 0;
 
-    // Noktaların kullanılıp kullanılmadığını takip etmek için bir bayrak dizisi
-    // Başlangıçta tüm noktalar KULLANILABİLİR (0)
+    // NoktalarÄ±n kullanÄ±lÄ±p kullanÄ±lmadÄ±ÄŸÄ±nÄ± takip etmek iÃ§in bir bayrak dizisi
+    // BaÅŸlangÄ±Ã§ta tÃ¼m noktalar KULLANILABÄ°LÄ°R (0)
     int* is_used = (int*)calloc(nokta_sayisi, sizeof(int));
-    if (is_used == NULL) return NULL; // Bellek tahsis hatası
+    if (is_used == NULL) return NULL; // Bellek tahsis hatasÄ±
 
-    // İşlenmemiş (kullanılmamış) nokta sayısını takip et
+    // Ä°ÅŸlenmemiÅŸ (kullanÄ±lmamÄ±ÅŸ) nokta sayÄ±sÄ±nÄ± takip et
     int remaining_points = nokta_sayisi;
 
-    // Ana RANSAC döngüsü (Iterative RANSAC)
-    // Kalan nokta sayısı, bir doğru oluşturmak için yeterli olduğu sürece devam et
+    // Ana RANSAC dÃ¶ngÃ¼sÃ¼ (Iterative RANSAC)
+    // Kalan nokta sayÄ±sÄ±, bir doÄŸru oluÅŸturmak iÃ§in yeterli olduÄŸu sÃ¼rece devam et
     while (remaining_points >= MIN_LINE_SIZE) {
 
-        // Bu iterasyon için en iyi modeli tutacak değişkenler
+        // Bu iterasyon iÃ§in en iyi modeli tutacak deÄŸiÅŸkenler
         dogru bestLine = { 0, 0, 0, NULL, 0 };
         int bestInlierCount = 0;
 
         // -----------------------
-        // RANSAC İÇ DÖNGÜSÜ BAŞLANGICI
+        // RANSAC Ä°Ã‡ DÃ–NGÃœSÃœ BAÅLANGICI
         // -----------------------
         for (int i = 0; i < MAX_ITERATIONS; i++) {
 
-            // 1. Rastgele İki Nokta Seçme (Benzersiz ve Kullanılmamış olmalı)
+            // 1. Rastgele Ä°ki Nokta SeÃ§me (Benzersiz ve KullanÄ±lmamÄ±ÅŸ olmalÄ±)
             int idx1 = -1, idx2 = -1;
             int count_available = 0;
 
-            // Sadece kullanılmamış noktaların sayısını kontrol et
+            // Sadece kullanÄ±lmamÄ±ÅŸ noktalarÄ±n sayÄ±sÄ±nÄ± kontrol et
             for (int j = 0; j < nokta_sayisi; j++) {
                 if (is_used[j] == 0) count_available++;
             }
 
-            if (count_available < 2) break; // İki nokta seçilemiyorsa döngüyü kır
+            if (count_available < 2) break; // Ä°ki nokta seÃ§ilemiyorsa dÃ¶ngÃ¼yÃ¼ kÄ±r
 
-            // Rastgele iki adet kullanılmamış nokta seç
+            // Rastgele iki adet kullanÄ±lmamÄ±ÅŸ nokta seÃ§
             do { idx1 = rand() % nokta_sayisi; } while (is_used[idx1] != 0);
             do { idx2 = rand() % nokta_sayisi; } while (is_used[idx2] != 0 || idx2 == idx1);
 
             kartezyenveri P1 = P[idx1];
             kartezyenveri P2 = P[idx2];
 
-            // 2. Model Oluşturma (Doğru Denklemini Hesaplama)
+            // 2. Model OluÅŸturma (DoÄŸru Denklemini Hesaplama)
             dogru currentLine = dogru_hesaplama(P1, P2);
 
-            // 3. Uyum Kontrolü (Inlier'ları Bulma)
+            // 3. Uyum KontrolÃ¼ (Inlier'larÄ± Bulma)
             int currentInlierCount = 0;
             int* currentInlierIndices = (int*)malloc(nokta_sayisi * sizeof(int));
-            if (currentInlierIndices == NULL) continue; // Bellek hatası
+            if (currentInlierIndices == NULL) continue; // Bellek hatasÄ±
 
             for (int j = 0; j < nokta_sayisi; j++) {
-                // Sadece kullanılmamış noktaları kontrol et
+                // Sadece kullanÄ±lmamÄ±ÅŸ noktalarÄ± kontrol et
                 if (is_used[j] == 0) {
                     double distance = noktanin_dogruya_uzakligi(P[j], currentLine);
 
-                    // Mesafe tolerans içinde mi?
+                    // Mesafe tolerans iÃ§inde mi?
                     if (distance <= DISTANCE_THRESHOLD) {
                         currentInlierIndices[currentInlierCount++] = j;
                     }
                 }
             }
 
-            // 4. En İyi Modeli Kaydetme
+            // 4. En Ä°yi Modeli Kaydetme
             if (currentInlierCount > bestInlierCount) {
-                // Önceki en iyi modelin inlier listesini serbest bırak
+                // Ã–nceki en iyi modelin inlier listesini serbest bÄ±rak
                 if (bestLine.inlierindisleri != NULL) {
                     free(bestLine.inlierindisleri);
                 }
@@ -476,42 +476,42 @@ dogru* dogrularin_ransacla_bulunmasi(const kartezyenveri* P, int nokta_sayisi, i
                 bestLine.B = currentLine.B;
                 bestLine.C = currentLine.C;
 
-                // Inlier indislerini ve sayısını kaydet
+                // Inlier indislerini ve sayÄ±sÄ±nÄ± kaydet
                 bestLine.inlierindisleri = currentInlierIndices;
                 bestLine.toplaminlier = currentInlierCount;
             }
             else {
-                // Mevcut model en iyi değilse, inlier listesini serbest bırak
+                // Mevcut model en iyi deÄŸilse, inlier listesini serbest bÄ±rak
                 free(currentInlierIndices);
             }
         }
         // -----------------------
-        // RANSAC İÇ DÖNGÜSÜ BİTİŞİ
+        // RANSAC Ä°Ã‡ DÃ–NGÃœSÃœ BÄ°TÄ°ÅÄ°
         // -----------------------
 
-        // 5. Model Kabulü ve Noktaların Çıkarılması
+        // 5. Model KabulÃ¼ ve NoktalarÄ±n Ã‡Ä±karÄ±lmasÄ±
         if (bestInlierCount >= MIN_LINE_SIZE) {
-            // Yeni bir doğru bulundu! Doğruyu kaydet.
+            // Yeni bir doÄŸru bulundu! DoÄŸruyu kaydet.
             (*lineCount)++;
             lines = (dogru*)realloc(lines, (*lineCount) * sizeof(dogru));
-            if (lines == NULL) break; // Bellek hatası
+            if (lines == NULL) break; // Bellek hatasÄ±
 
-            // Doğruyu dinamik diziye ekle
+            // DoÄŸruyu dinamik diziye ekle
             lines[(*lineCount) - 1] = bestLine;
 
-            // **Çok Önemli:** Bu doğruya ait noktaları "kullanıldı" olarak işaretle.
+            // **Ã‡ok Ã–nemli:** Bu doÄŸruya ait noktalarÄ± "kullanÄ±ldÄ±" olarak iÅŸaretle.
             for (int k = 0; k < bestLine.toplaminlier; k++) {
                 int index = bestLine.inlierindisleri[k];
                 if (is_used[index] == 0) {
-                    is_used[index] = 1; // Artık kullanılmış olarak işaretle
-                    remaining_points--;   // Kalan nokta sayısını azalt
+                    is_used[index] = 1; // ArtÄ±k kullanÄ±lmÄ±ÅŸ olarak iÅŸaretle
+                    remaining_points--;   // Kalan nokta sayÄ±sÄ±nÄ± azalt
                 }
             }
 
         }
         else {
-            // Yeterli inlier sayısına sahip bir doğru bulunamadı (veya kalan nokta azaldı)
-            // Çıkmadan önce varsa bestLine.inlierIndices'i temizle
+            // Yeterli inlier sayÄ±sÄ±na sahip bir doÄŸru bulunamadÄ± (veya kalan nokta azaldÄ±)
+            // Ã‡Ä±kmadan Ã¶nce varsa bestLine.inlierIndices'i temizle
             if (bestLine.inlierindisleri != NULL) {
                 free(bestLine.inlierindisleri);
             }
@@ -519,84 +519,84 @@ dogru* dogrularin_ransacla_bulunmasi(const kartezyenveri* P, int nokta_sayisi, i
         }
     }
 
-    // Bellek temizliği: Kullanılan nokta bayrak dizisini serbest bırak
+    // Bellek temizliÄŸi: KullanÄ±lan nokta bayrak dizisini serbest bÄ±rak
     free(is_used);
 
-    // Tespit edilen doğruları döndür
+    // Tespit edilen doÄŸrularÄ± dÃ¶ndÃ¼r
     return lines;
 }
 
 KesisimNoktasi kesisim_hesapla(const dogru L1, const dogru L2) {
     KesisimNoktasi P;
-    P.is_valid = 0; // Başlangıçta geçersiz
+    P.is_valid = 0; // BaÅŸlangÄ±Ã§ta geÃ§ersiz
 
     // Diyagonal (Determinant) hesapla: D = A1*B2 - A2*B1
     double D = L1.A * L2.B - L2.A * L1.B;
 
-    // Paralellik kontrolü (D yaklaşık sıfırsa, doğrular paraleldir)
-    // 1e-6 gibi küçük bir tolerans değeri kullanılır.
+    // Paralellik kontrolÃ¼ (D yaklaÅŸÄ±k sÄ±fÄ±rsa, doÄŸrular paraleldir)
+    // 1e-6 gibi kÃ¼Ã§Ã¼k bir tolerans deÄŸeri kullanÄ±lÄ±r.
     if (fabs(D) < 1e-6) {
-        // Doğrular paralel veya çakışık, kesişim yok.
+        // DoÄŸrular paralel veya Ã§akÄ±ÅŸÄ±k, kesiÅŸim yok.
         return P;
     }
 
-    // Kesişim noktasının koordinatlarını hesapla
+    // KesiÅŸim noktasÄ±nÄ±n koordinatlarÄ±nÄ± hesapla
     // xc = (B1*C2 - B2*C1) / D
     // yc = (A2*C1 - A1*C2) / D
     P.x = (L1.B * L2.C - L2.B * L1.C) / D;
     P.y = (L2.A * L1.C - L1.A * L2.C) / D;
 
-    P.is_valid = 1; // Kesişim noktası başarıyla bulundu
+    P.is_valid = 1; // KesiÅŸim noktasÄ± baÅŸarÄ±yla bulundu
     return P;
 }
 
-// İki doğru arasındaki küçük açıyı (radyan cinsinden) hesaplar ve dereceye çevirir.
+// Ä°ki doÄŸru arasÄ±ndaki kÃ¼Ã§Ã¼k aÃ§Ä±yÄ± (radyan cinsinden) hesaplar ve dereceye Ã§evirir.
 double dogrular_arasi_aci(const dogru L1, const dogru L2) {
-    // Normal vektörler: n1 = (A1, B1) ve n2 = (A2, B2)
-    double dot_product = L1.A * L2.A + L1.B * L2.B; // Nokta Çarpımı
-    double mag_n1 = sqrt(L1.A * L1.A + L1.B * L1.B); // Büyüklük 1
-    double mag_n2 = sqrt(L2.A * L2.A + L2.B * L2.B); // Büyüklük 2
+    // Normal vektÃ¶rler: n1 = (A1, B1) ve n2 = (A2, B2)
+    double dot_product = L1.A * L2.A + L1.B * L2.B; // Nokta Ã‡arpÄ±mÄ±
+    double mag_n1 = sqrt(L1.A * L1.A + L1.B * L1.B); // BÃ¼yÃ¼klÃ¼k 1
+    double mag_n2 = sqrt(L2.A * L2.A + L2.B * L2.B); // BÃ¼yÃ¼klÃ¼k 2
 
-    // Güvenlik kontrolü
+    // GÃ¼venlik kontrolÃ¼
     if (mag_n1 < 1e-6 || mag_n2 < 1e-6) return 0.0;
 
-    // Kosinüs hesapla: cos(theta) = |n1 . n2| / (|n1| |n2|)
+    // KosinÃ¼s hesapla: cos(theta) = |n1 . n2| / (|n1| |n2|)
     double cos_theta = fabs(dot_product) / (mag_n1 * mag_n2);
 
-    // Kayan nokta hatalarına karşı kontrol (cosinus -1 ile 1 arasında olmalı)
+    // Kayan nokta hatalarÄ±na karÅŸÄ± kontrol (cosinus -1 ile 1 arasÄ±nda olmalÄ±)
     if (cos_theta > 1.0) cos_theta = 1.0;
     if (cos_theta < 0.0) cos_theta = 0.0;
 
-    // Açıyı radyan cinsinden bul ve dereceye çevir
+    // AÃ§Ä±yÄ± radyan cinsinden bul ve dereceye Ã§evir
     double angle_rad = acos(cos_theta);
     double angle_deg = angle_rad * 180.0 / M_PI;
 
     return angle_deg;
 }
 
-// Kesişim noktasının robotun konumuna (0, 0) olan mesafesini hesaplar (İster 5)
+// KesiÅŸim noktasÄ±nÄ±n robotun konumuna (0, 0) olan mesafesini hesaplar (Ä°ster 5)
 double merkeze_mesafe_hesapla(const KesisimNoktasi P) {
 
-    return sqrt(P.x * P.x + P.y * P.y);  // Robot konumu (0, 0) olduğundan direkt Pisagor uygulanır: d = sqrt(x^2 + y^2) [cite: 96]
+    return sqrt(P.x * P.x + P.y * P.y);  // Robot konumu (0, 0) olduÄŸundan direkt Pisagor uygulanÄ±r: d = sqrt(x^2 + y^2) [cite: 96]
 }
 
 void svg_ciz(const char* dosya_adi, const kartezyenveri* P, int N, const dogru* lines, int lineCount, const KesisimNoktasi* best_kesisim, double max_aci_deg, double mesafe_m)
 {
-    const int W = 1000, H = 800, M = 60; // genişlik, yükseklik, kenar boşluğu
+    const int W = 1000, H = 800, M = 60; // geniÅŸlik, yÃ¼kseklik, kenar boÅŸluÄŸu
     FILE* f = fopen(dosya_adi, "w");
     if (!f) return;
 
     // Veri kutusu
     BBox box = bbox_hesapla(P, N);
 
-    // Başlık
+    // BaÅŸlÄ±k
     fprintf(f, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     fprintf(f, "<svg xmlns='http://www.w3.org/2000/svg' width='%d' height='%d'>\n", W, H);
 
     fprintf(f, "<svg xmlns='http://www.w3.org/2000/svg' width='%d' height='%d'>\n", W, H);
     fprintf(f, "<rect x='0' y='0' width='%d' height='%d' fill='white' stroke='none'/>\n", W, H);
 
-    // Çerçeve
+    // Ã‡erÃ§eve
     fprintf(f, "<rect x='%d' y='%d' width='%d' height='%d' fill='none' stroke='black' stroke-width='1'/>\n",
         M, M, W - 2 * M, H - 2 * M);
 
@@ -616,23 +616,23 @@ void svg_ciz(const char* dosya_adi, const kartezyenveri* P, int N, const dogru* 
         fprintf(f, "<circle cx='%.2f' cy='%.2f' r='2.2' fill='#1f77b4' />\n", sx, sy);
     }
 
-    // Doğrular: inlier aralığı kadar segment çiz
+    // DoÄŸrular: inlier aralÄ±ÄŸÄ± kadar segment Ã§iz
     for (int k = 0; k < lineCount; ++k) {
         const dogru* L = &lines[k];
 
         if (!L->inlierindisleri || L->toplaminlier < 2) {
-            // Yedek: bbox ile kes (eski yöntem)
+            // Yedek: bbox ile kes (eski yÃ¶ntem)
             double x1, y1, x2, y2; dogruyu_kutu_ile_kes(L, &box, &x1, &y1, &x2, &y2);
             world2svg(x1, y1, &box, W, H, M, &sx1, &sy1);
             world2svg(x2, y2, &box, W, H, M, &sx2, &sy2);
             fprintf(f, "<line x1='%.2f' y1='%.2f' x2='%.2f' y2='%.2f' stroke='#d62728' stroke-width='2' />\n",
                 sx1, sy1, sx2, sy2);
-            yaz_dogru_etiketi(f, k, sx1, sy1, sx2, sy2); // <-- EKLENDİ
+            yaz_dogru_etiketi(f, k, sx1, sy1, sx2, sy2); // <-- EKLENDÄ°
 
             continue;
         }
 
-        // Yön vektörü: n = (A,B) normal ise, u = (-B, A)
+        // YÃ¶n vektÃ¶rÃ¼: n = (A,B) normal ise, u = (-B, A)
         double ux = -L->B, uy = L->A;
         double un = sqrt(ux * ux + uy * uy);
         if (un < 1e-12) continue;
@@ -656,7 +656,7 @@ void svg_ciz(const char* dosya_adi, const kartezyenveri* P, int N, const dogru* 
 
         if (!init) continue;
 
-        // (İstersen 2 cm kadar uzat)
+        // (Ä°stersen 2 cm kadar uzat)
         // x_min -= 0.02*ux; y_min -= 0.02*uy;
         // x_max += 0.02*ux; y_max += 0.02*uy;
 
@@ -664,7 +664,7 @@ void svg_ciz(const char* dosya_adi, const kartezyenveri* P, int N, const dogru* 
         world2svg(x_max, y_max, &box, W, H, M, &sx2, &sy2);
         fprintf(f, "<line x1='%.2f' y1='%.2f' x2='%.2f' y2='%.2f' stroke='#d62728' stroke-width='2' />\n",
             sx1, sy1, sx2, sy2);
-        yaz_dogru_etiketi(f, k, sx1, sy1, sx2, sy2); // <-- EKLENDİ
+        yaz_dogru_etiketi(f, k, sx1, sy1, sx2, sy2); // <-- EKLENDÄ°
 
     }
 
@@ -675,18 +675,18 @@ void svg_ciz(const char* dosya_adi, const kartezyenveri* P, int N, const dogru* 
     fprintf(f, "<text x='%.2f' y='%.2f' font-size='14' font-family='Arial' fill='black'>Robot (0,0)</text>\n",
         sx0 + 8, sy0 - 8);
 
-    // En iyi kesişim + açı + mesafe
+    // En iyi kesiÅŸim + aÃ§Ä± + mesafe
     if (best_kesisim && best_kesisim->is_valid) {
         double skx, sky; world2svg(best_kesisim->x, best_kesisim->y, &box, W, H, M, &skx, &sky);
         fprintf(f, "<circle cx='%.2f' cy='%.2f' r='5' fill='#2ca02c' />\n", skx, sky);
         fprintf(f, "<text x='%.2f' y='%.2f' font-size='14' font-family='Arial' fill='#2ca02c'>Kesisim (%.3f, %.3f)</text>\n",
             skx + 8, sky - 8, best_kesisim->x, best_kesisim->y);
 
-        // Robot->Kesişim mesafesi oku çiz
+        // Robot->KesiÅŸim mesafesi oku Ã§iz
         fprintf(f, "<line x1='%.2f' y1='%.2f' x2='%.2f' y2='%.2f' stroke='#2ca02c' stroke-dasharray='5,5' stroke-width='1.5'/>\n",
             sx0, sy0, skx, sky);
 
-        // Açı ve mesafe etiketi (üst bilgi)
+        // AÃ§Ä± ve mesafe etiketi (Ã¼st bilgi)
         fprintf(f, "<text x='%d' y='%d' font-size='16' font-family='Arial' fill='black'>Aci: %.2f deg   Mesafe: %.3f m</text>\n",
             M + 6, M - 20 + 16, max_aci_deg, mesafe_m);
 
@@ -721,9 +721,9 @@ static BBox bbox_hesapla(const kartezyenveri* P, int N) {
             if (P[i].y > b.maxy) b.maxy = P[i].y;
         }
     }
-    // Hiç nokta yoksa, makul bir kutu ver
+    // HiÃ§ nokta yoksa, makul bir kutu ver
     if (ilk) { b.minx = -1; b.maxx = 1; b.miny = -1; b.maxy = 1; }
-    // Biraz boşluk (padding)
+    // Biraz boÅŸluk (padding)
     double dx = b.maxx - b.minx; if (dx <= 1e-9) dx = 1.0;
     double dy = b.maxy - b.miny; if (dy <= 1e-9) dy = 1.0;
     double pad = 0.10; // %10
@@ -739,21 +739,21 @@ static BBox bbox_hesapla(const kartezyenveri* P, int N) {
 
 static void world2svg(double x, double y, const BBox* b, int W, int H, int M, double* sx, double* sy)
 {
-    // SVG sol-üst (0,0), y aşağı artar. Dünyayı genişliğe/yeleğe orantıla.
+    // SVG sol-Ã¼st (0,0), y aÅŸaÄŸÄ± artar. DÃ¼nyayÄ± geniÅŸliÄŸe/yeleÄŸe orantÄ±la.
     double sx_scale = (W - 2.0 * M) / (b->maxx - b->minx);
     double sy_scale = (H - 2.0 * M) / (b->maxy - b->miny);
-    double s = sx_scale < sy_scale ? sx_scale : sy_scale; // eş ölçek
+    double s = sx_scale < sy_scale ? sx_scale : sy_scale; // eÅŸ Ã¶lÃ§ek
     double cx = M + (x - b->minx) * s;
-    double cy = M + (b->maxy - y) * s; // y eksenini ters çevir
+    double cy = M + (b->maxy - y) * s; // y eksenini ters Ã§evir
     *sx = cx; *sy = cy;
 }
 
 static void dogruyu_kutu_ile_kes(const dogru* L, const BBox* b, double* x1, double* y1, double* x2, double* y2)
 {
-    // Doğru: A x + B y + C = 0
-    // Görünürlük için kutu sınırlarıyla kesiştirip 2 nokta üretelim.
-    // Kutu kenarları: x = minx/maxx, y = miny/maxy
-    // Olası 4 kesişimden ekran içinde kalan 2'sini seç.
+    // DoÄŸru: A x + B y + C = 0
+    // GÃ¶rÃ¼nÃ¼rlÃ¼k iÃ§in kutu sÄ±nÄ±rlarÄ±yla kesiÅŸtirip 2 nokta Ã¼retelim.
+    // Kutu kenarlarÄ±: x = minx/maxx, y = miny/maxy
+    // OlasÄ± 4 kesiÅŸimden ekran iÃ§inde kalan 2'sini seÃ§.
     double xs[4], ys[4]; int c = 0;
 
     // x = minx => y = (-A*x - C)/B  (B ~ 0 ise atla)
@@ -782,38 +782,38 @@ static void dogruyu_kutu_ile_kes(const dogru* L, const BBox* b, double* x1, doub
         *x2 = xs[1]; *y2 = ys[1];
     }
     else {
-        // Kutu içinde yeterli kesişim yoksa, merkezden kısa bir segment çiz
+        // Kutu iÃ§inde yeterli kesiÅŸim yoksa, merkezden kÄ±sa bir segment Ã§iz
         *x1 = b->minx; *y1 = (-(L->A * (*x1)) - L->C) / (fabs(L->B) < 1e-12 ? 1.0 : L->B);
         *x2 = b->maxx; *y2 = (-(L->A * (*x2)) - L->C) / (fabs(L->B) < 1e-12 ? 1.0 : L->B);
     }
 }
 
-// Ekran koordinatlarındaki (sx1,sy1)-(sx2,sy2) çizgisine "dK" etiketi yazar
+// Ekran koordinatlarÄ±ndaki (sx1,sy1)-(sx2,sy2) Ã§izgisine "dK" etiketi yazar
 static void yaz_dogru_etiketi(FILE* f, int k, double sx1, double sy1, double sx2, double sy2) {
     double dx = sx2 - sx1, dy = sy2 - sy1;
     double L = sqrt(dx * dx + dy * dy);
     if (L < 1e-6) return;
 
-    // Orta nokta + çizgiden 10 px yana (normal doğrultusunda) kaydır
+    // Orta nokta + Ã§izgiden 10 px yana (normal doÄŸrultusunda) kaydÄ±r
     double mx = 0.5 * (sx1 + sx2), my = 0.5 * (sy1 + sy2);
-    double nx = -dy / L, ny = dx / L;   // ekrana göre normal
+    double nx = -dy / L, ny = dx / L;   // ekrana gÃ¶re normal
     mx += 10.0 * nx;
     my += 10.0 * ny;
 
-    // Yazıyı çizgiye paralel döndür
+    // YazÄ±yÄ± Ã§izgiye paralel dÃ¶ndÃ¼r
     double angle_deg = atan2(dy, dx) * 180.0 / M_PI;
 
     char etiket[16];
     sprintf(etiket, "d%d", k + 1);
 
-    // Beyaz konturlu kırmızı yazı (arkası okunaklı olsun diye)
+    // Beyaz konturlu kÄ±rmÄ±zÄ± yazÄ± (arkasÄ± okunaklÄ± olsun diye)
     fprintf(f,
         "<text x='%.2f' y='%.2f' font-size='13' font-family='Arial' "
         "fill='#d62728' transform='rotate(%.2f, %.2f, %.2f)' "
         "style='paint-order:stroke; stroke:white; stroke-width:3px'>%s</text>\n",
         mx, my, angle_deg, mx, my, etiket);
 
-    // İnce bir üst yazı (keskinlik için)
+    // Ä°nce bir Ã¼st yazÄ± (keskinlik iÃ§in)
     fprintf(f,
         "<text x='%.2f' y='%.2f' font-size='13' font-family='Arial' "
         "fill='#d62728' transform='rotate(%.2f, %.2f, %.2f)'>%s</text>\n",
