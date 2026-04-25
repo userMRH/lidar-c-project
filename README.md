@@ -24,5 +24,5 @@ LiDAR sensöründen alınan ham verileri işleyerek anlamlı çıktılar üretme
 
 Bu proje iki kişilik ekip çalışması olarak geliştirilmiştir.
 
-- Rena Hüseynova
-- Ahmet Yılmaz
+- Rana Huseynova
+- Meryem Azra Gostak
